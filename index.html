@@ -1,128 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iron Crotch Trainer</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f4f4f4; }
-        h1, h2 { color: #d32f2f; }
-        .section { background: white; padding: 20px; margin: 15px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        button { background: #d32f2f; color: white; border: none; padding: 10px 20px; margin: 5px; border-radius: 5px; cursor: pointer; }
-        button:hover { background: #b71c1c; }
-        .progress { width: 100%; background: #ddd; height: 20px; border-radius: 10px; overflow: hidden; margin: 10px 0; }
-        .bar { height: 100%; background: #4caf50; width: 0%; transition: width 0.3s; }
-        ul { list-style: none; padding: 0; }
-        li { padding: 8px; background: #f9f9f9; margin: 5px 0; border-radius: 4px; }
-        .timer { font-size: 2em; font-weight: bold; text-align: center; margin: 20px 0; }
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #1e1e2f; color: #eee; }
+        h1 { text-align: center; color: #ff4d4d; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .card { background: #2a2a3d; border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .card:hover { transform: translateY(-5px); background: #36364d; }
+        .card h3 { margin: 10px 0; color: #ffcc00; }
+        iframe { width: 100%; height: 180px; border-radius: 8px; }
+        button { background: #ff4d4d; color: white; border: none; padding: 12px 24px; margin: 8px; border-radius: 8px; font-size: 16px; }
+        .timer { font-size: 2.8em; font-weight: bold; text-align: center; margin: 20px 0; color: #ffd700; }
+        .warning { background: #4a2a2a; padding: 15px; border-radius: 8px; border-left: 5px solid #ff4d4d; }
     </style>
 </head>
 <body>
-    <h1>🛡️ Iron Crotch Trainer App</h1>
-    <p>A progressive learning app for safe Iron Crotch / Tie Dang Gong training.</p>
-    
-    <div class="section">
-        <h2>Current Level: Beginner</h2>
-        <div class="progress"><div class="bar" id="progressBar" style="width: 25%;"></div></div>
-        <button onclick="nextLevel()">Advance Level</button>
-        <button onclick="logSession()">Log Today's Session</button>
+    <h1>🛡️ Iron Crotch Trainer</h1>
+    <p style="text-align:center; font-size:1.1em;">Sichere, schrittweise Ausbildung für Anfänger</p>
+
+    <div class="warning">
+        <strong>WICHTIG FÜR ANFÄNGER:</strong> Konsultiere immer einen Arzt. Starte extrem sanft. Bei Schmerzen sofort stoppen. Fortschritt dauert Monate, nicht Tage.
     </div>
 
-    <div class="section">
-        <h2>Daily Routine</h2>
-        <ul id="routineList"></ul>
-        <button onclick="startTimer(300)">Start 5-Min Prep Timer</button>
+    <div class="grid" id="cards"></div>
+
+    <div style="margin:30px 0;">
+        <button onclick="logSession()">Heutige Session loggen</button>
+        <button onclick="startTimer(300)">5-Min Vorbereitungs-Timer</button>
         <div id="timer" class="timer">5:00</div>
     </div>
 
-    <div class="section">
-        <h2>Progress Tracker</h2>
-        <p id="logHistory"></p>
-        <button onclick="clearLogs()">Clear History</button>
-    </div>
-
-    <div class="section">
-        <h2>Warnings & Tips</h2>
-        <p>Always consult a doctor. Start slow. Focus on breathing and form. Stop if sharp pain occurs.</p>
+    <div style="background:#333; padding:20px; border-radius:12px;">
+        <h2>Dein Fortschritt</h2>
+        <p id="logHistory" style="line-height:1.6;"></p>
     </div>
 
     <script>
-        let level = 1;
-        let logs = JSON.parse(localStorage.getItem('icLogs')) || [];
+        const phases = [
+            {
+                title: "Phase 1: Vorbereitung",
+                desc: "10 Min. Tiefe Bauchatmung + sanfte Bauchmassagen (von oben nach unten zum Schambein). Qi-Gefühl in den Unterleib leiten.",
+                video: "https://www.youtube.com/embed/VIDEO_ID_HERE", // Replace with real qigong prep video
+                level: "Anfänger"
+            },
+            {
+                title: "Phase 2: Massage & Manipulation",
+                desc: "Sanftes Rollen der Samenstränge + Kreisen der Hoden mit den Händen. 200–500 sanfte Wiederholungen. Sehr leicht beginnen!",
+                video: "https://www.youtube.com/embed/VIDEO_ID_HERE",
+                level: "Anfänger"
+            },
+            {
+                title: "Phase 3: Leichtes Hängen",
+                desc: "Weiches Tuch/Seil um die Basis wickeln. Leichtes Gewicht (0,5–2 kg) kurz anheben & schwingen. Knie beugen zum Start.",
+                video: "https://www.youtube.com/embed/VIDEO_ID_HERE",
+                level: "Fortgeschritten"
+            },
+            {
+                title: "Phase 4: Klopfen & Atmung",
+                desc: "Leichtes Abklopfen mit lockeren Fäusten + tiefe Atmung. Solarplexus mit einbeziehen.",
+                video: "https://www.youtube.com/embed/VIDEO_ID_HERE",
+                level: "Anfänger+"
+            }
+        ];
 
-        const routines = {
-            1: [
-                "Preparation: Abdominal massages + Qi focus (10 min)",
-                "Gentle rolling & manipulation (build to 300 reps)",
-                "Light tapping on testicles + solar plexus",
-                "Cool-down: Kidney massage + meditation"
-            ],
-            2: ["Increase intensity", "Introduce light weight hanging (short sessions)", "More reps"],
-            3: ["Add swaying/pulling", "Moderate impacts"],
-            4: ["Advanced impacts & heavier conditioning"]
-        };
-
-        function renderRoutine() {
-            const list = document.getElementById('routineList');
-            list.innerHTML = '';
-            (routines[level] || routines[1]).forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                list.appendChild(li);
+        function createCards() {
+            const grid = document.getElementById('cards');
+            grid.innerHTML = '';
+            phases.forEach(phase => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3>${phase.title}</h3>
+                    <p><strong>\( {phase.level}</strong><br> \){phase.desc}</p>
+                    <iframe src="${phase.video}" frameborder="0" allowfullscreen></iframe>
+                    <button onclick="event.stopImmediatePropagation(); alert('Übung gestartet! Atme tief und langsam.');">Starten</button>
+                `;
+                grid.appendChild(card);
             });
         }
 
-        function nextLevel() {
-            if (level < 4) {
-                level++;
-                document.getElementById('progressBar').style.width = (level * 25) + '%';
-                renderRoutine();
-                alert(`Advanced to Level ${level}! Keep progressing safely.`);
-            } else {
-                alert("Master level reached!");
-            }
-        }
-
+        let logs = JSON.parse(localStorage.getItem('icLogs')) || [];
         function logSession() {
-            const today = new Date().toLocaleDateString();
-            logs.unshift({date: today, level: level});
+            logs.unshift(new Date().toLocaleDateString('de-DE') + " – Gute Session!");
             localStorage.setItem('icLogs', JSON.stringify(logs));
             renderLogs();
-            alert('Session logged! Keep it up.');
+            alert("Session gespeichert. Weiter so!");
         }
-
         function renderLogs() {
-            const hist = document.getElementById('logHistory');
-            hist.innerHTML = logs.map(log => `<strong>${log.date}</strong> - Level ${log.level}`).join('<br>');
-        }
-
-        function clearLogs() {
-            if (confirm('Clear history?')) {
-                logs = [];
-                localStorage.removeItem('icLogs');
-                renderLogs();
-            }
+            document.getElementById('logHistory').innerHTML = logs.map(entry => `📅 ${entry}`).join('<br>');
         }
 
         let timerInterval;
         function startTimer(seconds) {
             clearInterval(timerInterval);
-            let time = seconds;
+            let timeLeft = seconds;
             const display = document.getElementById('timer');
             timerInterval = setInterval(() => {
-                const min = Math.floor(time / 60);
-                const sec = time % 60;
+                const min = Math.floor(timeLeft / 60);
+                const sec = timeLeft % 60;
                 display.textContent = `\( {min}: \){sec < 10 ? '0' : ''}${sec}`;
-                if (--time < 0) {
+                if (--timeLeft < 0) {
                     clearInterval(timerInterval);
-                    display.textContent = 'Done!';
-                    alert('Excellent work! Rest and recover.');
+                    display.textContent = "Fertig! Gut gemacht.";
                 }
             }, 1000);
         }
 
-        // Initialize
-        renderRoutine();
+        createCards();
         renderLogs();
     </script>
 </body>
