@@ -5,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iron Crotch Trainer</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #1e1e2f; color: #eee; }
-        h1 { text-align: center; color: #ff4d4d; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        .card { background: #2a2a3d; border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-        .card:hover { transform: translateY(-5px); background: #36364d; }
-        .card h3 { margin: 10px 0; color: #ffcc00; }
-        iframe { width: 100%; height: 180px; border-radius: 8px; }
-        button { background: #ff4d4d; color: white; border: none; padding: 12px 24px; margin: 8px; border-radius: 8px; font-size: 16px; }
-        .timer { font-size: 2.8em; font-weight: bold; text-align: center; margin: 20px 0; color: #ffd700; }
-        .warning { background: #4a2a2a; padding: 15px; border-radius: 8px; border-left: 5px solid #ff4d4d; }
+        body { font-family: system-ui, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #12121a; color: #eee; }
+        h1 { text-align: center; color: #ff4757; font-size: 2em; }
+        .warning { background: #3a2a2a; padding: 18px; border-radius: 12px; border-left: 6px solid #ff4757; margin: 20px 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: #1f1f2e; border-radius: 16px; overflow: hidden; box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
+        .card-header { background: linear-gradient(90deg, #ff4757, #ff9f1c); padding: 12px; text-align: center; font-weight: bold; }
+        img { width: 100%; height: 200px; object-fit: cover; }
+        .content { padding: 16px; }
+        button { background: #ff4757; color: white; border: none; padding: 14px 28px; border-radius: 12px; font-size: 1.1em; margin: 10px 0; width: 100%; }
     </style>
 </head>
 <body>
     <h1>🛡️ Iron Crotch Trainer</h1>
-    <p style="text-align:center; font-size:1.1em;">Sichere, schrittweise Ausbildung für Anfänger</p>
+    <p style="text-align:center;">Sichere, schrittweise Ausbildung für Anfänger</p>
 
     <div class="warning">
         <strong>WICHTIG FÜR ANFÄNGER:</strong> Konsultiere immer einen Arzt. Starte extrem sanft. Bei Schmerzen sofort stoppen. Fortschritt dauert Monate, nicht Tage.
@@ -27,90 +26,48 @@
 
     <div class="grid" id="cards"></div>
 
-    <div style="margin:30px 0;">
-        <button onclick="logSession()">Heutige Session loggen</button>
-        <button onclick="startTimer(300)">5-Min Vorbereitungs-Timer</button>
-        <div id="timer" class="timer">5:00</div>
-    </div>
-
-    <div style="background:#333; padding:20px; border-radius:12px;">
-        <h2>Dein Fortschritt</h2>
-        <p id="logHistory" style="line-height:1.6;"></p>
-    </div>
-
     <script>
         const phases = [
             {
                 title: "Phase 1: Vorbereitung",
-                desc: "10 Min. Tiefe Bauchatmung + sanfte Bauchmassagen (von oben nach unten zum Schambein). Qi-Gefühl in den Unterleib leiten.",
-                video: "https://www.youtube.com/embed/VIDEO_ID_HERE", // Replace with real qigong prep video
+                desc: "10 Min. Tiefe Bauchatmung + sanfte Massagen vom Solarplexus abwärts. Wärme in den Unterleib leiten.",
+                imgPrompt: "Anatomische Illustration: Mann in entspannter Haltung, Hände auf Bauch, rote Energiefluss-Linien zum Beckenboden, clean minimalist style",
                 level: "Anfänger"
             },
             {
                 title: "Phase 2: Massage & Manipulation",
-                desc: "Sanftes Rollen der Samenstränge + Kreisen der Hoden mit den Händen. 200–500 sanfte Wiederholungen. Sehr leicht beginnen!",
-                video: "https://www.youtube.com/embed/VIDEO_ID_HERE",
+                desc: "Sanftes Rollen der Samenstränge und Kreisen der Hoden mit Daumen & Zeigefinger. Sehr leichter Druck.",
+                imgPrompt: "Minimalistische anatomische Zeichnung: Hände führen sanfte Massage am Beckenbereich durch, blaue Energie-Linien, no real people",
                 level: "Anfänger"
             },
             {
                 title: "Phase 3: Leichtes Hängen",
-                desc: "Weiches Tuch/Seil um die Basis wickeln. Leichtes Gewicht (0,5–2 kg) kurz anheben & schwingen. Knie beugen zum Start.",
-                video: "https://www.youtube.com/embed/VIDEO_ID_HERE",
+                desc: "Weiches Tuch oder Seil verwenden. Leichtes Gewicht langsam anheben und schwingen. Knie beugen.",
+                imgPrompt: "Illustration: Silhouette mit weichem Tuch und kleinem Gewicht am Unterleib, kontrollierte Haltung",
                 level: "Fortgeschritten"
-            },
-            {
-                title: "Phase 4: Klopfen & Atmung",
-                desc: "Leichtes Abklopfen mit lockeren Fäusten + tiefe Atmung. Solarplexus mit einbeziehen.",
-                video: "https://www.youtube.com/embed/VIDEO_ID_HERE",
-                level: "Anfänger+"
             }
         ];
 
         function createCards() {
             const grid = document.getElementById('cards');
-            grid.innerHTML = '';
-            phases.forEach(phase => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <h3>${phase.title}</h3>
-                    <p><strong>\( {phase.level}</strong><br> \){phase.desc}</p>
-                    <iframe src="${phase.video}" frameborder="0" allowfullscreen></iframe>
-                    <button onclick="event.stopImmediatePropagation(); alert('Übung gestartet! Atme tief und langsam.');">Starten</button>
-                `;
-                grid.appendChild(card);
-            });
+            grid.innerHTML = phases.map(phase => `
+                <div class="card">
+                    <div class="card-header">\( {phase.title} <small>( \){phase.level})</small></div>
+                    <img src="https://via.placeholder.com/600x300/1f1f2e/ffffff?text=\( {encodeURIComponent(phase.title)}" alt=" \){phase.title}">
+                    <div class="content">
+                        <p>${phase.desc}</p>
+                        <button onclick="startExercise('${phase.title}')">Starten</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        let logs = JSON.parse(localStorage.getItem('icLogs')) || [];
-        function logSession() {
-            logs.unshift(new Date().toLocaleDateString('de-DE') + " – Gute Session!");
-            localStorage.setItem('icLogs', JSON.stringify(logs));
-            renderLogs();
-            alert("Session gespeichert. Weiter so!");
-        }
-        function renderLogs() {
-            document.getElementById('logHistory').innerHTML = logs.map(entry => `📅 ${entry}`).join('<br>');
-        }
-
-        let timerInterval;
-        function startTimer(seconds) {
-            clearInterval(timerInterval);
-            let timeLeft = seconds;
-            const display = document.getElementById('timer');
-            timerInterval = setInterval(() => {
-                const min = Math.floor(timeLeft / 60);
-                const sec = timeLeft % 60;
-                display.textContent = `\( {min}: \){sec < 10 ? '0' : ''}${sec}`;
-                if (--timeLeft < 0) {
-                    clearInterval(timerInterval);
-                    display.textContent = "Fertig! Gut gemacht.";
-                }
-            }, 1000);
+        function startExercise(name) {
+            alert(`🚀 ${name} gestartet!\n\nAtme tief in den Unterbauch. Gehe langsam vor. Timer starten?`);
+            // Add timer logic here if desired
         }
 
         createCards();
-        renderLogs();
     </script>
 </body>
 </html>
